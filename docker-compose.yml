@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  booking-system-postgres:
+    image: postgres:15.3-alpine
+    container_name: booking-system-postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postdba
+      POSTGRES_USER: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+  booking-system-pgadmin:
+    image: dpage/pgadmin4
+    container_name: booking-system-pgadmin
+    restart: always
+    depends_on:
+      - booking-system-postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@localhost.com
+      PGADMIN_DEFAULT_PASSWORD: postdba
+    ports:
+      - 8080:80
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
+    
+networks:
+  default:
+    name: local-network
+    external: true
