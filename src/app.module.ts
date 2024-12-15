@@ -1,25 +1,33 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { Booking } from "./bookings/booking.entity";
-import { Space } from "./spaces/space.entity";
-import { User } from "./users/user.entity";
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "localhost",
-      port: 5432,
-      username: "postgres",
-      password: "postdba",
-      database: "booking_system",
-      autoLoadEntities: true,
-      synchronize: true,
-      logging: true,
-      entities: [User, Space, Booking],
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: "postgres",
+        host: configService.get<string>("DATABASE_HOST"),
+        port: configService.get<number>("DATABASE_PORT"),
+        username: configService.get<string>("DATABASE_USER"),
+        password: configService.get<string>("DATABASE_PASSWORD"),
+        database: configService.get<string>("DATABASE_NAME"),
+        autoLoadEntities: true,
+        synchronize: true,
+        logging: true,
+      }),
+    }),
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

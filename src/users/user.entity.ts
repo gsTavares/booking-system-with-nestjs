@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+import * as bcrypt from "bcrypt";
+
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -22,4 +24,8 @@ export class User {
   created_at: string;
   @UpdateDateColumn()
   updated_at: string;
+
+  async validatePassword(textPassword: string): Promise<boolean> {
+    return bcrypt.compare(textPassword, this.password);
+  }
 }
