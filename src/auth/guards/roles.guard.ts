@@ -13,7 +13,7 @@ export class RolesGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const requiredRoles = this.reflector
       .get<string[]>(ROLES_KEY, context.getHandler())
-      .map((role) => role.toLowerCase());
+      ?.map((role) => role.toLowerCase());
     if (!requiredRoles) {
       return true;
     }
