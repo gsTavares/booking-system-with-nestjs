@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   CreateDateColumn,
   Entity,
@@ -14,7 +15,11 @@ export class Space {
   name: string;
   @Column({ length: 255 })
   description: string;
-  @Column({ type: "numeric", precision: 2 })
+  @Column({
+    type: "numeric",
+    precision: 5,
+    scale: 2,
+  })
   price: number;
   @Column({ default: true })
   availability: boolean;
@@ -22,4 +27,9 @@ export class Space {
   created_at: Date;
   @UpdateDateColumn()
   updated_at: Date;
+
+  @AfterLoad()
+  private _serializeNumbers() {
+    this.price = Number(this.price);
+  }
 }
